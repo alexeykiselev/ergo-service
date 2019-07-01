@@ -1,0 +1,29 @@
+[Unit]
+Description=Ergo TestNet Node
+ConditionPathExists=/usr/share/ergo-testnet
+After=network.target
+ 
+[Service]
+Type=simple
+User=ergo-testnet
+Group=ergo-testnet
+LimitNOFILE=1024
+
+Restart=on-failure
+RestartSec=10
+startLimitIntervalSec=60
+
+WorkingDirectory=/usr/share/ergo-testnet
+ExecStart=/usr/bin/java -jar /usr/share/ergo-testnet/ergo-3.0.0.jar --testnet -c /usr/share/ergo-testnet/testnet.conf 
+
+# make sure log directory exists and owned by syslog
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/ergo-testnet
+ExecStartPre=/bin/chown syslog:adm /var/log/ergo-testnet
+ExecStartPre=/bin/chmod 755 /var/log/ergo-testnet
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=ergo-testnet
+ 
+[Install]
+WantedBy=multi-user.target
